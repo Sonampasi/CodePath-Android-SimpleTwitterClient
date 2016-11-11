@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Simple Tweets</string>
+    <string name="login_label">Connect to Twitter</string>
+    <string name="title_activity_timeline">Timeline</string>
+    <string name="body">TextView</string>
+    <string name="user_name">User Name</string>
+    <string name="tweet">Tweet</string>
+    <string name="whats_happening">What\'s happening ?</string>
+    <string name="_140">140</string>
+    <string name="timestamp">TimeStamp</string>
+    <string name="screenname">ScreenName</string>
+    <string name="tweet_body">Tweet body</string>
+    <string name="username">UserName</string>
+
+</resources>

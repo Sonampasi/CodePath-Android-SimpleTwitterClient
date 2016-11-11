@@ -1,0 +1,44 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.codepath.apps.simpletweets.activities.LoginActivity"
+    android:background="@color/colorTwitter">
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="loginToRest"
+        android:text="@string/login_label"
+        android:id="@+id/login"
+        android:visibility="visible"
+        android:textSize="24sp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@android:color/white"
+        android:textStyle="normal|bold"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:gravity="center_horizontal"
+        android:layout_below="@+id/imageView3"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="98dp" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/twitter_login"
+        android:id="@+id/imageView3"
+        android:adjustViewBounds="true"
+        tools:ignore="ContentDescription"
+        android:layout_marginTop="152dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+</RelativeLayout>
