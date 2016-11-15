@@ -22,8 +22,7 @@ The following **required** functionality is completed:
 The following **optional** features are implemented:
 
 * [x] User can **see a counter with total number of characters left for tweet** on compose tweet page
-* [x] User can **click a link within a tweet body** on tweet details view. 
-  * [ ] The click will launch the web browser with relevant page opened.
+* [x] User can **click a link within a tweet body** on tweet details view. The click will launch the web browser with relevant page opened.
 * [x] User can **pull down to refresh tweets timeline**
 * [x] User can **open the twitter app offline and see last loaded tweets**. Persisted in SQLite tweets are refreshed on every application launch. While "live data" is displayed when app can get it from Twitter API, it is also saved for use in offline mode.
 * [x] User can tap a tweet to **open a detailed tweet view**
@@ -81,4 +80,3 @@ Describe any challenges encountered while building the app.
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
->>>>>>> 5c96605c9729e51f1108b4002b784eb28ec88676
