@@ -1,5 +1,9 @@
 package com.codepath.apps.simpletweets.activities;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
@@ -12,7 +16,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.codepath.apps.simpletweets.utils.EndlessRecyclerViewScrollListener;
 import com.codepath.apps.simpletweets.R;
 import com.codepath.apps.simpletweets.fragments.TweetComposeFragment;
@@ -23,11 +26,11 @@ import com.codepath.apps.simpletweets.utils.TwitterClient;
 import com.codepath.apps.simpletweets.models.Tweet;
 import com.codepath.apps.simpletweets.models.User;
 import com.loopj.android.http.JsonHttpResponseHandler;
-
+import com.raizlabs.android.dbflow.sql.language.SQLite;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
+import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -39,29 +42,13 @@ public class TimelineActivity extends AppCompatActivity {
     private TweetsArrayAdapter adapter;
     private EndlessRecyclerViewScrollListener scrollListener;
     User myUserAccount;
+    String name,screenName,profileImageUrl;
     private SwipeRefreshLayout swipeContainer;
-
+    private SharedPreferences pref;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timeline);
-        // Lookup the swipe container view
-        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-        // Setup refresh listener which triggers new data loading
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                // Your code to refresh the list here.
-                // Make sure you call swipeContainer.setRefreshing(false)
-                // once the network request has completed successfully.
-                fetchTimelineAsync(0);
-            }
-        });
-        // Configure the refreshing colors
-        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -84,7 +71,12 @@ public class TimelineActivity extends AppCompatActivity {
             @Override
             public boolean onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 // load more previous tweets on scroll
-                populateTimeline();
+                if(isNetworkAvailable()) {
+                    populateTimeline();
+                }
+                else{
+                    persistedData();
+                }
                 return true;
             }
         };
@@ -99,16 +91,63 @@ public class TimelineActivity extends AppCompatActivity {
         });
 
         client = TwitterApplication.getRestClient();
-        // load the initial latest tweets
-        populateTimeline();
-        // get logged in Twitter account info as well
-        getMyUserJson();
+        if(isNetworkAvailable()) {
+            // load the initial latest tweets
+            populateTimeline();
+            // get logged in Twitter account info as well
+            //getMyUserInfo();
+        }
+        else {
+            persistedData();
+        }
+
+        // Lookup the swipe container view
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        // Setup refresh listener which triggers new data loading
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Your code to refresh the list here.
+                // Make sure you call swipeContainer.setRefreshing(false)
+                // once the network request has completed successfully.
+                if(isNetworkAvailable()) {
+                    fetchTimelineAsync(0);
+                }
+                else {
+                    persistedData();
+                    scrollToTop();
+                    swipeContainer.setRefreshing(false);
+                }
+            }
+        });
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
 
     }
 
+    public boolean isNetworkAvailable() {
+        ConnectivityManager mgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = mgr.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
 
-    private void getMyUserInfo(JSONObject json) {
-        myUserAccount = User.fromArray(json);
+    public void scrollToTop() {
+        // when you post a tweet or swipe-to-refresh, scroll back to display the new tweet(s)
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager = (LinearLayoutManager) rvTweets.getLayoutManager();
+        linearLayoutManager.scrollToPositionWithOffset(0, 0);
+    }
+
+    public void persistedData(){
+        // Query tweets based on user
+        List<Tweet> persistedTweets = SQLite.select().
+                from(Tweet.class).
+                queryList();
+        tweets.addAll(persistedTweets);
+        adapter.notifyDataSetChanged();
     }
 
     public void fetchTimelineAsync(int page) {
@@ -137,30 +176,6 @@ public class TimelineActivity extends AppCompatActivity {
         });
     }
 
-    public void scrollToTop() {
-        // when you post a tweet or swipe-to-refresh, scroll back to display the new tweet(s)
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager = (LinearLayoutManager) rvTweets.getLayoutManager();
-        linearLayoutManager.scrollToPositionWithOffset(0, 0);
-    }
-
-    // bring up the dialogfragment for composing a new tweet
-    private void showComposeDialog() {
-        FragmentManager fm = getSupportFragmentManager();
-        // pass in the URL for the user's profile image
-        //String profileImageUrl = myUserAccount.getProfileImageUrl();
-        TweetComposeFragment tweetComposeFragment = TweetComposeFragment.newInstance(myUserAccount);
-        tweetComposeFragment.show(fm, "fragment_compose");
-    }
-
-    // bring up the dialogfragment for showing a detailed view of a tweet
-    private void showTweetDetailDialog(int position) {
-        // pass in the user's profile image and the tweet
-        FragmentManager fm = getSupportFragmentManager();
-        TweetDetailFragment tweetDetailFragment = TweetDetailFragment.newInstance(tweets.get(position));
-        tweetDetailFragment.show(fm, "fragment_tweet_detail");
-    }
-
     private void populateTimeline() {
         final int previousTweetsLength = tweets.size();
         long max_id = 0;
@@ -184,21 +199,6 @@ public class TimelineActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-    private void getMyUserJson() {
-        // get the logged-in user's user account info
-        client.getMyUserInfo(new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject json) {
-                getMyUserInfo(json);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Log.d("DEBUG", errorResponse.toString());
-            }
-        });
     }
 
     public void onTweetButtonClicked(String TweetText) {
@@ -228,5 +228,21 @@ public class TimelineActivity extends AppCompatActivity {
             }
         });
     }
+
+    // bring up the dialogfragment for composing a new tweet
+    private void showComposeDialog() {
+        FragmentManager fm = getSupportFragmentManager();
+        TweetComposeFragment tweetComposeFragment = TweetComposeFragment.newInstance();
+        tweetComposeFragment.show(fm, "fragment_compose");
+    }
+
+    // bring up the dialogfragment for showing a detailed view of a tweet
+    private void showTweetDetailDialog(int position) {
+        // pass in the user's profile image and the tweet
+        FragmentManager fm = getSupportFragmentManager();
+        TweetDetailFragment tweetDetailFragment = TweetDetailFragment.newInstance(tweets.get(position));
+        tweetDetailFragment.show(fm, "fragment_tweet_detail");
+    }
+
 
 }

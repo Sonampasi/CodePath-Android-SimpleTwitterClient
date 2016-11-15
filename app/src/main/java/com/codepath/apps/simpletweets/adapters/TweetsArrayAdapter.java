@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -124,11 +125,21 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<TweetsArrayAdapter.
             long dateMillis = sf.parse(rawJsonDate).getTime();
             relativeDate = DateUtils.getRelativeTimeSpanString(dateMillis,
                     System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS).toString();
+
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-            relativeDate = relativeDate.replace("hours", "h").replace("hour", "h").replace("minutes", "m").replace("minute", "m").replace("seconds", "s").replace("second", "s").replace("days", "d").replace("day", "d");
+        relativeDate = relativeDate.replaceAll(" ago", "");
+        relativeDate = relativeDate.replaceAll("0 seconds", "now");
+        relativeDate = relativeDate.replaceAll(" seconds", "s");
+        relativeDate = relativeDate.replaceAll(" second", "s");
+        relativeDate = relativeDate.replaceAll(" minutes", "m");
+        relativeDate = relativeDate.replaceAll(" minute", "m");
+        relativeDate = relativeDate.replaceAll(" hours", "h");
+        relativeDate = relativeDate.replaceAll(" hour", "h");
+        relativeDate = relativeDate.replaceAll(" days", "d");
+        relativeDate = relativeDate.replaceAll(" day", "d");
 
         return  relativeDate;
     }

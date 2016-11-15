@@ -1,7 +1,9 @@
 package com.codepath.apps.simpletweets.fragments;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -23,17 +25,18 @@ import com.squareup.picasso.Picasso;
 public class TweetComposeFragment extends android.support.v4.app.DialogFragment {
     private String profileImageUrl;
     private EditText etComposeTweet;
+    private SharedPreferences pref;
 
     public TweetComposeFragment() {
         // Required empty public constructor
     }
 
-    public static TweetComposeFragment newInstance(User myUserAccount) {
+    public static TweetComposeFragment newInstance() {
         // get the user profile image URL to display
         TweetComposeFragment tweetComposeFragment = new TweetComposeFragment();
-        Bundle args = new Bundle();
-        args.putSerializable("myUserAccount", myUserAccount);
-        tweetComposeFragment.setArguments(args);
+//        Bundle args = new Bundle();
+//        //args.putSerializable("myUserAccount", myUserAccount);
+//        //tweetComposeFragment.setArguments(args);
         return tweetComposeFragment;
     }
 
@@ -54,12 +57,16 @@ public class TweetComposeFragment extends android.support.v4.app.DialogFragment 
         ImageView ivMyProfileImage = (ImageView) view.findViewById(R.id.ivProfileImage);
         TextView tvUserName = (TextView) view.findViewById(R.id.tvUserName);
         TextView tvScreenName = (TextView) view.findViewById(R.id.tvScreenName);
-        // Fetch arguments from bundle
-        User user = (User) getArguments().getSerializable("myUserAccount");
+
+        pref = PreferenceManager.getDefaultSharedPreferences(this.getContext());
+        String name = pref.getString("name","");
+        String screenName = pref.getString("screenName","");
+        profileImageUrl = pref.getString("profileImageUrl","");
+
         // display the logged-in user's profile image
-        Picasso.with(view.getContext()).load(user.getProfileImageUrl()).fit().centerCrop().into(ivMyProfileImage);
-        tvUserName.setText(user.getName());
-        tvScreenName.setText("@" + user.getScreenName());
+        Picasso.with(view.getContext()).load(profileImageUrl).fit().centerCrop().into(ivMyProfileImage);
+        tvUserName.setText(name);
+        tvScreenName.setText("@" + screenName);
         // Show soft keyboard automatically and request focus to field
         etComposeTweet.requestFocus();
         getDialog().getWindow().setSoftInputMode(
@@ -73,7 +80,9 @@ public class TweetComposeFragment extends android.support.v4.app.DialogFragment 
                 EditText etComposeTweet = (EditText) getDialog().findViewById(R.id.etComposeTweet);
                 String myTweet = etComposeTweet.getText().toString();
                 TimelineActivity timelineActivity = (TimelineActivity) getActivity();
-                timelineActivity.onTweetButtonClicked(myTweet);
+                if(timelineActivity.isNetworkAvailable()) {
+                    timelineActivity.onTweetButtonClicked(myTweet);
+                }
                 dismiss();
             }
         });
