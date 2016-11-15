@@ -19,7 +19,7 @@ import java.util.Date;
 import java.util.Locale;
 
 public class TweetDetailFragment extends android.support.v4.app.DialogFragment {
-    private String myProfileImageUrl;
+
     private Tweet tweet;
 
     public TweetDetailFragment() {
@@ -51,7 +51,7 @@ public class TweetDetailFragment extends android.support.v4.app.DialogFragment {
         ImageView ivProfileImage = (ImageView) view.findViewById(R.id.ivProfileImage);
         TextView tvUserName = (TextView) view.findViewById(R.id.tvUserName);
         TextView tvScreenName = (TextView) view.findViewById(R.id.tvScreenName);
-        TextView tvTweetBody = (TextView) view.findViewById(R.id.tvBody);
+        final TextView tvTweetBody = (TextView) view.findViewById(R.id.tvBody);
         TextView tvTimeStamp = (TextView) view.findViewById(R.id.tvCreatedAt);
         // Fetch arguments from bundle
 

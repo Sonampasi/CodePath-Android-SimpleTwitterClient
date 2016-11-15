@@ -19,10 +19,10 @@ import android.widget.TextView;
 
 import com.codepath.apps.simpletweets.R;
 import com.codepath.apps.simpletweets.activities.TimelineActivity;
-import com.codepath.apps.simpletweets.models.User;
 import com.squareup.picasso.Picasso;
 
 public class TweetComposeFragment extends android.support.v4.app.DialogFragment {
+
     private String profileImageUrl;
     private EditText etComposeTweet;
     private SharedPreferences pref;
@@ -32,11 +32,7 @@ public class TweetComposeFragment extends android.support.v4.app.DialogFragment 
     }
 
     public static TweetComposeFragment newInstance() {
-        // get the user profile image URL to display
         TweetComposeFragment tweetComposeFragment = new TweetComposeFragment();
-//        Bundle args = new Bundle();
-//        //args.putSerializable("myUserAccount", myUserAccount);
-//        //tweetComposeFragment.setArguments(args);
         return tweetComposeFragment;
     }
 
@@ -59,11 +55,11 @@ public class TweetComposeFragment extends android.support.v4.app.DialogFragment 
         TextView tvScreenName = (TextView) view.findViewById(R.id.tvScreenName);
 
         pref = PreferenceManager.getDefaultSharedPreferences(this.getContext());
-        String name = pref.getString("name","");
-        String screenName = pref.getString("screenName","");
-        profileImageUrl = pref.getString("profileImageUrl","");
+        String name = pref.getString("name", "");
+        String screenName = pref.getString("screenName", "");
+        profileImageUrl = pref.getString("profileImageUrl", "");
 
-        // display the logged-in user's profile image
+        // display the logged-in user's profile info
         Picasso.with(view.getContext()).load(profileImageUrl).fit().centerCrop().into(ivMyProfileImage);
         tvUserName.setText(name);
         tvScreenName.setText("@" + screenName);
@@ -80,7 +76,7 @@ public class TweetComposeFragment extends android.support.v4.app.DialogFragment 
                 EditText etComposeTweet = (EditText) getDialog().findViewById(R.id.etComposeTweet);
                 String myTweet = etComposeTweet.getText().toString();
                 TimelineActivity timelineActivity = (TimelineActivity) getActivity();
-                if(timelineActivity.isNetworkAvailable()) {
+                if (timelineActivity.isNetworkAvailable()) {
                     timelineActivity.onTweetButtonClicked(myTweet);
                 }
                 dismiss();
@@ -101,6 +97,7 @@ public class TweetComposeFragment extends android.support.v4.app.DialogFragment 
         EditText etComposeTweet = (EditText) view.findViewById(R.id.etComposeTweet);
         etComposeTweet.addTextChangedListener(new TextWatcher() {
             int charsRemaining;
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // Fires right as the text is being changed (even supplies the range of text)
@@ -120,7 +117,7 @@ public class TweetComposeFragment extends android.support.v4.app.DialogFragment 
                 // update the charsRemaining TextView with how many of the 140 chars they have left
                 charsRemaining = 140 - s.length();
                 tvCharsRemaining.setText(String.valueOf(charsRemaining));
-                tvCharsRemaining.setTextColor(charsRemaining < 0? Color.RED : 0xFF55ACEE);
+                tvCharsRemaining.setTextColor(charsRemaining < 0 ? Color.RED : 0xFF55ACEE);
             }
         });
     }

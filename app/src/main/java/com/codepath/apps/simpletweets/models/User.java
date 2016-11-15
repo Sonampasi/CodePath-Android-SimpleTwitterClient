@@ -23,38 +23,12 @@ public class User extends BaseModel implements Serializable {
     @Column
     public String profileImageUrl;
 
-    public User() {
-
-    }
-
-    public User(String name, String screenName, String profileImageUrl) {
-        this.name = name;
-        this.screenName = screenName;
-        this.profileImageUrl = profileImageUrl;
-    }
-
-    public void setUid(long uid) {
-        this.uid = uid;
-    }
-
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setScreenName(String screenName) {
-        this.screenName = screenName;
-    }
-
-    public void setProfileImageUrl(String profileImageUrl) {
-        this.profileImageUrl = profileImageUrl;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public long getUid() {
-        return uid;
     }
 
     public String getScreenName() {
@@ -65,7 +39,7 @@ public class User extends BaseModel implements Serializable {
         return profileImageUrl;
     }
 
-    public static User fromArray(JSONObject jsonObject){
+    public static User fromArray(JSONObject jsonObject) {
         User user = new User();
         try {
             user.name = jsonObject.getString("name");

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +40,7 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<TweetsArrayAdapter.
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView tvUserName,tvBody,tvCreatedAt,tvScreenName;
+        public TextView tvUserName, tvBody, tvCreatedAt, tvScreenName;
         public ImageView ivProfileImage;
 
         public ViewHolder(final View itemView) {
@@ -101,18 +100,18 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<TweetsArrayAdapter.
 
         // Set item views based on your views and data model
         TextView userName = holder.tvUserName;
-        userName.setText(tweet.getUser().getName()+" ");
+        userName.setText(tweet.getUser().getName() + " ");
         TextView body = holder.tvBody;
         body.setText(tweet.getBody());
         TextView create_at = holder.tvCreatedAt;
         create_at.setText(getRelativeTimeAgo(tweet.getCreatedAt()));
         TextView screen_name = holder.tvScreenName;
-        screen_name.setText("@" +tweet.getUser().getScreenName());
+        screen_name.setText("@" + tweet.getUser().getScreenName());
         ImageView profileImage = holder.ivProfileImage;
         String profileImageUrl = tweet.getUser().getProfileImageUrl();
-        if(!TextUtils.isEmpty(profileImageUrl)){
+        if (!TextUtils.isEmpty(profileImageUrl)) {
             Picasso.with(getContext()).load(profileImageUrl).into(profileImage);
-       }
+        }
     }
 
     public String getRelativeTimeAgo(String rawJsonDate) {
@@ -141,7 +140,7 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<TweetsArrayAdapter.
         relativeDate = relativeDate.replaceAll(" days", "d");
         relativeDate = relativeDate.replaceAll(" day", "d");
 
-        return  relativeDate;
+        return relativeDate;
     }
 
     @Override
