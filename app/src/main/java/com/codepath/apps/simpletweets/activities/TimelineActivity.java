@@ -6,6 +6,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -241,6 +242,7 @@ public class TimelineActivity extends AppCompatActivity {
         // pass in the user's profile image and the tweet
         FragmentManager fm = getSupportFragmentManager();
         TweetDetailFragment tweetDetailFragment = TweetDetailFragment.newInstance(tweets.get(position));
+        tweetDetailFragment.setStyle(DialogFragment.STYLE_NORMAL, R.style.Dialog_FullScreen);
         tweetDetailFragment.show(fm, "fragment_tweet_detail");
     }
 
